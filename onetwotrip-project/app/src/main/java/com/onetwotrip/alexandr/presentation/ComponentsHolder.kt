@@ -63,6 +63,10 @@ object ComponentsHolder {
         }
     }
 
+    private fun printState() {
+        logger.debug("components count '${components.size}'")
+    }
+
 }
 
 data class ComponentKey(

@@ -1,5 +1,6 @@
 package com.onetwotrip.alexandr.presentation.di
 
+import com.onetwotrip.alexandr.model.tours.ToursManager
 import com.onetwotrip.alexandr.presentation.AppSchedulers
 import dagger.Component
 import javax.inject.Scope
@@ -17,4 +18,6 @@ annotation class AppScope
 )
 interface AppComponent {
     fun appSchedulers(): AppSchedulers
+
+    fun toursManager(): ToursManager
 }
