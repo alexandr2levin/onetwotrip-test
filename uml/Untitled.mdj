@@ -1497,6 +1497,19 @@
 							},
 							"lineStyle": 1,
 							"points": "778:833;778:765"
+						},
+						{
+							"_type": "UMLNoteView",
+							"_id": "AAAAAAFng1ZAz79vuus=",
+							"_parent": {
+								"$ref": "AAAAAAFneKCHxEln1Vk="
+							},
+							"font": "Arial;13;0",
+							"left": 360,
+							"top": 616,
+							"width": 161,
+							"height": 105,
+							"text": "model – так я называю\nслой бизнес логики.\n\nОсновная причина – в этом случае по имени слои как нужно сортируются :)"
 						}
 					]
 				},
@@ -1804,7 +1817,8 @@
 																			"_parent": {
 																				"$ref": "AAAAAAFneKnbo0yMfjM="
 																			},
-																			"name": "id"
+																			"name": "id",
+																			"type": ""
 																		},
 																		{
 																			"_type": "UMLParameter",
@@ -1966,7 +1980,8 @@
 																			"_parent": {
 																				"$ref": "AAAAAAFneKodK0yZd/o="
 																			},
-																			"name": "id"
+																			"name": "id",
+																			"type": ""
 																		},
 																		{
 																			"_type": "UMLParameter",
