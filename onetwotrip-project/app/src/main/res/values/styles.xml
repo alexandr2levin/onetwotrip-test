@@ -11,4 +11,13 @@
     <style name="Toolbar" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
     </style>
 
+    <style name="DialogTitle" parent="TextAppearance.AppCompat.Medium">
+        <item name="android:textSize">19sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/black</item>
+    </style>
+    <style name="DialogMessage" parent="TextAppearance.AppCompat.Medium">
+        <item name="android:textSize">16sp</item>
+    </style>
+
 </resources>

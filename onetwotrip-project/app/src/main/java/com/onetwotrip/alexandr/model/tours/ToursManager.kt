@@ -8,6 +8,7 @@ import com.onetwotrip.alexandr.data.hotels.Hotel
 import com.onetwotrip.alexandr.data.hotels.HotelsDao
 import io.reactivex.Single
 import io.reactivex.functions.Function3
+import org.threeten.bp.Duration
 
 class ToursManager(
     private val companiesDao: CompaniesDao,
@@ -23,23 +24,29 @@ class ToursManager(
                 hotelsDao.getAll(),
                 flightsDao.getAll(),
                 Function3<List<Company>,  List<Hotel>, List<Flight>, List<Tour>> { companies, hotels, flights ->
-                    val hotelsToTour = if(params.companiesIds.isEmpty()) {
-                        // there is no filters
-                        hotels
-                    } else {
-                        // filter by companies
-                        hotels
-                            .filter {
-                                it.flights.any { flightId -> params.companiesIds.contains(flightId) }
-                            }
-                    }
-
-                    hotelsToTour
+                    filterHotels(params, hotels, flights)
                         .map { hotel ->
                             createTour(companies, flights, hotel)
                         }
                 }
             )
+    }
+
+    private fun filterHotels(params: SearchParams, hotels: List<Hotel>, flights: List<Flight>): List<Hotel> {
+        if(params.companiesIds.isEmpty()) {
+            return hotels
+        }
+        return hotels
+                .map {
+                    val filteredFlights = it.flights
+                            .filter { flightId ->
+                                val flight = flights.first { it.id == flightId }
+                                params.companiesIds.contains(flight.companyId)
+                            }
+
+                    it.copy(flights = filteredFlights)
+                }
+                .filter { it.flights.isNotEmpty() }
     }
 
     private fun createTour(companies: List<Company>, flights: List<Flight>, hotel: Hotel): Tour {
@@ -51,7 +58,9 @@ class ToursManager(
         )
     }
 
-    private fun createFlightOptions(companies: List<Company>, flights: List<Flight>, hotel: Hotel): List<Tour.FlightOption> {
+    private fun createFlightOptions(
+            companies: List<Company>, flights: List<Flight>, hotel: Hotel
+    ): List<Tour.FlightOption> {
         val hotelFlightsIds = hotel.flights
 
         val hotelFlights = hotelFlightsIds
@@ -65,11 +74,13 @@ class ToursManager(
                 Tour.FlightOption(
                     flightId = flight.id,
                     companyName = company.name,
-                    departive = flight.departure,
+                    departure = flight.departure,
                     arrival = flight.arrival,
-                    price = flight.price
+                    duration = Duration.between(flight.departure, flight.arrival),
+                    priceWithHotel = flight.price + hotel.price
                 )
             }
+                .sortedBy { it.priceWithHotel }
     }
 
 }

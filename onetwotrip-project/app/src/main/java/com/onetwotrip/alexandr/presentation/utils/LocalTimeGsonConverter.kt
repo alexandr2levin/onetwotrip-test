@@ -1,6 +1,7 @@
 package com.onetwotrip.alexandr.presentation.utils
 
 import com.google.gson.*
+import org.flycraft.tonguetwisterslibrary.common.data.utils.DateTimeFormatters
 import org.slf4j.LoggerFactory
 import org.threeten.bp.LocalTime
 import org.threeten.bp.format.DateTimeFormatter
@@ -8,7 +9,7 @@ import java.lang.reflect.Type
 
 object LocalTimeGsonConverter : JsonSerializer<LocalTime>, JsonDeserializer<LocalTime> {
 
-    private var dateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm")
+    private var dateTimeFormatter = DateTimeFormatters.hhMmFormatter
 
     private val logger = LoggerFactory.getLogger(javaClass)
 

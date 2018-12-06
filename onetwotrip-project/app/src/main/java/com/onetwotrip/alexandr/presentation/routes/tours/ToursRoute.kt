@@ -11,6 +11,7 @@ import com.onetwotrip.alexandr.presentation.di.ViewScope
 import com.onetwotrip.alexandr.presentation.routes.base.MvpPresenter
 import com.onetwotrip.alexandr.presentation.routes.base.MvpView
 import dagger.Component
+import io.reactivex.rxkotlin.addTo
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.rxkotlin.zipWith
 import kotlinx.android.parcel.Parcelize
@@ -34,10 +35,13 @@ class ToursPresenter @Inject constructor(
     fun initializeViewModel() {
         onceViewAttached { view ->
             if(view.viewModel == null) {
-                view.viewModel = ToursViewModel.Loading(
-                    searchParams = SearchParams(
-                        companiesIds = listOf()
-                    )
+                view.viewModel = ToursViewModel(
+                        state = ToursViewModel.State.LOADING,
+                        searchParams = SearchParams(
+                            companiesIds = listOf()
+                        ),
+                        companies = null,
+                        tours = null
                 )
             }
         }
@@ -45,9 +49,7 @@ class ToursPresenter @Inject constructor(
 
     fun loadData() {
         onceViewAttached { view ->
-            view.viewModel = ToursViewModel.Loading(
-                    searchParams = view.viewModel!!.searchParams
-            )
+            view.viewModel = view.viewModel!!.copy(state = ToursViewModel.State.LOADING)
 
             toursManager.search(view.viewModel!!.searchParams)
                 .zipWith(toursManager.getCompanies()) {
@@ -63,49 +65,39 @@ class ToursPresenter @Inject constructor(
                         applyErrorViewModel()
                     }
                 )
+                .addTo(destroyCompositeDisposable)
         }
     }
 
     private fun applySuccessViewModel(tours: List<Tour>, companies: List<Company>) {
         onceViewAttached { view ->
-            view.viewModel = ToursViewModel.Success(
-                searchParams = view.viewModel!!.searchParams,
-                companies = companies,
-                tours = tours
+            view.viewModel = view.viewModel!!.copy(
+                    state = ToursViewModel.State.SUCCESS,
+                    companies = companies,
+                    searchParams = view.viewModel!!.searchParams,
+                    tours = tours
             )
         }
     }
 
     private fun applyErrorViewModel() {
         onceViewAttached { view ->
-            view.viewModel = ToursViewModel.Error(
-                searchParams = view.viewModel!!.searchParams
-            )
+            view.viewModel = view.viewModel!!.copy(state = ToursViewModel.State.ERROR)
         }
     }
 
 }
 
-
-sealed class ToursViewModel : Parcelable {
-
-    abstract val searchParams: SearchParams
-
-    @Parcelize
-    data class Success(
-        override val searchParams: SearchParams,
-        val companies: List<Company>,
-        val tours: List<Tour>
-    ) : ToursViewModel()
-
-    @Parcelize
-    data class Error(
-        override val searchParams: SearchParams
-    ) : ToursViewModel()
-
-    @Parcelize
-    data class Loading(
-        override val searchParams: SearchParams
-    ) : ToursViewModel()
-
+@Parcelize
+data class ToursViewModel(
+        val state: State,
+        val searchParams: SearchParams,
+        val companies: List<Company>?,
+        val tours: List<Tour>?
+) : Parcelable {
+    enum class State {
+        LOADING,
+        ERROR,
+        SUCCESS
+    }
 }
