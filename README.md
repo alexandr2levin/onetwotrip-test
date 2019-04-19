@@ -5,5 +5,5 @@
 
 | UML Package Diagram              | UML Class Diagram              |
 | -------------------------------- | ------------------------------ |
-| ![](uml/UML Package Diagram.jpg) | ![](uml/UML Class Diagram.jpg) |
+| <img src="./uml/UML Package Diagram.jpg"> | <img src="./uml/UML Class Diagram.jpg"> |
 
